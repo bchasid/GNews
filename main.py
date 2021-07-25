@@ -8,7 +8,19 @@ import time
 import pandas as pd
 from bs4 import BeautifulSoup
 
-
+import requests
+from lxml.html import fromstring
+# def get_proxies():
+#     url = 'https://free-proxy-list.net/'
+#     response = requests.get(url)
+#     parser = fromstring(response.text)
+#     proxies = set()
+#     for i in parser.xpath('//tbody/tr')[:10]:
+#     if i.xpath('.//td[7][contains(text(),"yes")]'):
+#     #Grabbing IP and corresponding PORT
+#     proxy = ":".join([i.xpath('.//td[1]/text()')[0], i.xpath('.//td[2]/text()')[0]])
+#     proxies.add(proxy)
+#     return proxies
 
 def get_gnews(day:int,mon:int,year:int,symbol:str):
 
@@ -42,6 +54,9 @@ def get_gnews(day:int,mon:int,year:int,symbol:str):
     except http.client.HTTPException as e:
         # other kind of error occured during request
         print('request error')
+        df = pd.DataFrame({'Date': [datetime.date(year, mon, day)], 'Symbol': [symbol], 'CNT': 0, 'result': "empty"})
+    except Exception as e:
+        print('other exception')
         df = pd.DataFrame({'Date': [datetime.date(year, mon, day)], 'Symbol': [symbol], 'CNT': 0, 'result': "empty"})
     else:  # no error occurred
         resultstr = str(result,"latin-1")
@@ -91,57 +106,9 @@ def get_gnews(day:int,mon:int,year:int,symbol:str):
 
 if __name__ == '__main__':
  #   print_hi('PyCharm')
+
    # symbol_list=["CLOV","WISH","AMD","AAL","TLRY","MSFT","OGI","TSLA","SOFI","JD","INTC","UAL","MU","FCEL","MRIN","CPOP","VIVO","ARVLW","SLP","AKYA","IKNA","VOXX","TUSK","SHLS","ACMR","TALK","MASS","OLK","SLN","AFRM","BBGI","CLXT","MTEX","EVLO","GRIN"]
-    symbol_list = [  "HIHO", "HIII", "HIMX", "HITI", "HJLI", "HLAH", "HLG", "HLIO",
-                    "HLIT", "HLNE", "HLXA", "HMCO", "HMHC", "HMNF", "HMPT", "HMST", "HMTV", "HNNA", "HNRG", "HNST",
-                    "HOFT", "HOFV", "HOLI", "HOLX", "HOMB", "HON", "HONE", "HOOK", "HOPE", "HOTH", "HOVNP", "HOWL",
-                    "HPK", "HQI", "HQY", "HRMY", "HROW", "HRTX", "HRZN", "HSAQ", "HSDT", "HSIC", "HSII", "HSKA", "HSON",
-                    "HST", "HSTM", "HSTO", "HTBI", "HTBK", "HTBX", "HTGM", "HTHT", "HTIA", "HTLD", "HTLF", "HTOO",
-                    "HUBG", "HUDI", "HUGE", "HUIZ", "HURC", "HURN", "HUSN", "HUT", "HVBC", "HVBT", "HWBK", "HWC",
-                    "HWKN", "HX", "HYAC", "HYFM", "HYMC", "HYRE", "HYW", "HZNP", "IAC", "IART", "IAS", "IBCP", "IBEX",
-                    "IBKR", "IBOC", "IBRX", "IBTX", "ICAD", "ICBK", "ICCC", "ICCH", "ICFI", "ICHR", "ICLK", "ICLR",
-                    "ICMB", "ICON", "ICPT", "ICUI", "IDBA", "IDCC", "IDEX", "IDN", "IDRA", "IDXX", "IDYA", "IEA", "IEC",
-                    "IEP", "IESC", "IFBD", "IFMK", "IFRX", "IGAC", "IGIC", "IGMS", "IGNY", "IHRT", "III", "IIII",
-                    "IIIV", "IIN", "IIVI", "IKNA", "IKNX", "IKT", "ILMN", "ILPT", "IMAB", "IMAC", "IMCC", "IMCR",
-                    "IMGN", "IMKTA", "IMMP", "IMMR", "IMNM", "IMOS", "IMPL", "IMRA", "IMTE", "IMTX", "IMUX", "IMV",
-                    "IMVT", "IMXI", "INBK", "INBX", "INCY", "INDB", "INDI", "INDT", "INFI", "INFN", "INGN", "INKA",
-                    "INM", "INMB", "INMD", "INNV", "INO", "INOD", "INOV", "INPX", "INSE", "INSG", "INSM", "INTA",
-                    "INTC", "INTG", "INTU", "INTZ", "INVA", "INVE", "INVO", "INVZ", "INZY", "IONS", "IOSP", "IOVA",
-                    "IPA", "IPAR", "IPDN", "IPGP", "IPHA", "IPLDP", "IPSC", "IPVI", "IPW", "IPWR", "IQ", "IRBT", "IRCP",
-                    "IRDM", "IRIX", "IRMD", "IROQ", "IRTC", "IRWD", "ISAA", "ISBC", "ISEE", "ISIG", "ISLE", "ISNS",
-                    "ISPC", "ISRG", "ISSC", "ISTR", "ISUN", "ITAC", "ITCI", "ITHX", "ITI", "ITIC", "ITMR", "ITOS",
-                    "ITQ", "ITRI", "ITRM", "ITRN", "IVA", "IVAC", "IZEA", "JACK", "JAGX", "JAKK", "JAMF", "JAN", "JANX",
-                    "JAZZ", "JBHT", "JBLU", "JBSS", "JCIC", "JCOM", "JCS", "JCTCF", "JD", "JFIN", "JFU", "JG", "JJSF",
-                    "JKHY", "JMPNL", "JNCE", "JOAN", "JOBS", "JOFF", "JOUT", "JRJC", "JRSH", "JRVR", "JSM", "JUGGU",
-                    "JUPW", "JVA", "JWEL", "JYAC", "JYNT", "JZXN", "KAII", "KAIIU", "KAIR", "KALA", "KALU", "KALV",
-                    "KARO", "KBAL", "KBNT", "KBSF", "KC", "KDMN", "KDNY", "KDP", "KE", "KELYA", "KEQU", "KERN", "KFFB",
-                    "KFRC", "KHC", "KIDS", "KIII", "KIN", "KINS", "KINZ", "KIRK", "KLAC", "KLAQ", "KLDO", "KLIC",
-                    "KLXE", "KMDA", "KMPH", "KNBE", "KNDI", "KNSA", "KNSL", "KNTE", "KOD", "KOPN", "KOR", "KOSS",
-                    "KPLT", "KPTI", "KRBP", "KRKR", "KRMD", "KRNL", "KRNT", "KRNY", "KRON", "KROS", "KRT", "KRTX",
-                    "KRUS", "KRYS", "KSI", "KSMT", "KSPN", "KTCC", "KTOS", "KTRA", "KURA", "KURI", "KVHI", "KVSA",
-                    "KXIN", "KYMR", "KZIA", "KZR", "LAAAU", "LABP", "LAKE", "LAMR", "LANC", "LAND", "LARK", "LASR",
-                    "LATN", "LAUR", "LAWS", "LAZR", "LAZY", "LBAI", "LBC", "LBPH", "LBPS", "LBRDA", "LBTYA", "LCA",
-                    "LCAA", "LCAP", "LCNB", "LCUT", "LCY", "LDHA", "LE", "LECO", "LEDS", "LEE", "LEGA", "LEGH", "LEGN",
-                    "LEGO", "LESL", "LEVL", "LEXX", "LFMD", "LFST", "LFTR", "LFUS", "LFVN", "LGAC", "LGHL", "LGIH",
-                    "LGND", "LGO", "LGVN", "LHAA", "LHCG", "LHDX", "LI", "LIFE", "LILA", "LINC", "LIND", "LINK", "LIQT",
-                    "LITE", "LITTU", "LIVE", "LIVK", "LIVN", "LIVX", "LIXT", "LIZI", "LJAQ", "LJPC", "LKCO", "LKFN",
-                    "LKQ", "LLNW", "LMACA", "LMAO", "LMAT", "LMB", "LMFA", "LMNL", "LMNR", "LMNX", "LMPX", "LMRK",
-                    "LMST", "LNDC", "LNSR", "LNT", "LNTH", "LOAN", "LOB", "LOCO", "LOGI", "LOGC", "LOOP", "LOPE",
-                    "LORL", "LOTZ", "LOVE", "LPCN", "LPLA", "LPRO", "LPSN", "LPTH", "LPTX", "LQDA", "LQDT", "LRCX",
-                    "LRFC", "LRMR", "LSAQ", "LSBK", "LSCC", "LSEA", "LSTR", "LSXMA", "LTBR", "LTCH", "LTRN", "LTRPA",
-                    "LTRX", "LULU", "LUMO", "LUNA", "LUNG", "LUXA", "LVOX", "LVRA", "LVTX", "LWAC", "LWAY", "LX",
-                    "LXEH", "LXRX", "LYEL", "LYFT", "LYL", "LYRA", "LYTS", "LZ", "MAAC", "MACA", "MACK", "MACQ", "MACU",
-                    "MACUW", "MAGS", "MANH", "MANT", "MAPS", "MAQC", "MAR", "MARA", "MARK", "MARPS", "MASI", "MASS",
-                    "MAT", "MATW", "MAXN", "MAYS", "MBCN", "MBII", "MBIN", "MBIO", "MBNKP", "MBOT", "MBRX", "MBTC",
-                    "MBUU", "MBWM", "MCAD", "MCBC", "MCBS", "MCFE", "MCFT", "MCHP", "MCHX", "MCMJ", "MCRB", "MCRI",
-                    "MDB", "MDCA", "MDGL", "MDGS", "MDIA", "MDJH", "MDLZ", "MDNA", "MDRR", "MDRX", "MDVL", "MDWD",
-                    "MDWT", "MDXG", "ME", "MEDP", "MEDS", "MEIP", "MELI", "MEOH", "MERC", "MESA", "MESO", "METC",
-                    "METX", "MF", "MFH", "MFIN", "MFNC", "MGEE", "MGI", "MGIC", "MGLN", "MGNI", "MGNX", "MGPI", "MGRC",
-                    "MGTA", "MGTX", "MGYR", "MHLD", "MICT", "MIDD", "MILE", "MIME", "MIND", "MINM", "MIRM", "MIRO",
-                    "MIST", "MITAU", "MITC", "MITK", "MITO", "MKD", "MKSI", "MKTX", "MKTY", "MLAB", "MLAC", "MLCO",
-                    "MLHR", "MLVF", "MMAC", "MMAT", "MMLP", "MMSI", "MMYT", "MNDO", "MNDY", "MNKD", "MNMD", "MNOV",
-                    "MNPR", "MNRO", "MNSB", "MNST", "MNTK", "MNTV", "MNTX", "MODV", "MOFG", "MOGO", "MOHO", "MOLN",
-                    "MOMO", "MON", "MOR", "MORF"]
+    symbol_list = ["UEIC","UEPS","UFCS","UFPI","UFPT","UG","UGRO","UHAL","UIHC","UK","ULBI","ULCC","ULH","ULTA","UMBF","UMPQ","UNAM","UNB","UNIT","UNTY","UONE","UPC","UPLD","UPST","UPWK","URBN","URGN","UROY","USAK","USAP","USAU","USCR","USEG","USIO","USLM","USWS","UTHR","UTMD","UTME","UTSI","UVSP","UXIN","VABK","VACC","VACQ","VALN","VALU","VBFC","VBIV","VBLT","VBTX","VC","VCEL","VCKA","VCNX","VCTR","VCVC","VCYT","VECO","VECT","VELO","VENA","VEON","VERA","VERB","VERI","VERO","VERU","VERV","VERX","VERY","VEV","VFF","VG","VIAC","VIAV","VICR","VIEW","VIH","VII","VINC","VINO","VINP","VIOT","VIR","VIRC","VIRI","VIRT","VIRX","VISL","VITL","VIVE","VIVO","VJET","VKTX","VLAT","VLDR","VLGEA","VLON","VLY","VMAC","VMAR","VMD","VMEO","VNDA","VNET","VNOM","VOD","VOR","VOSO","VOXX","VPCB","VRA","VRAR","VRAY","VRCA","VRDN","VREX","VRM","VRME","VRNA","VRNS","VRNT","VRPX","VRRM","VRSK","VRSN","VRTS","VRTX","VS","VSAT","VSEC","VSTA","VSTM","VTAQ","VTGN","VTIQ","VTNR","VTRS","VTRU","VTSI","VTVT","VUZI","VVOS","VVPR","VWE","VWTR","VXRT","VYGR","VYNE","VYNT","WABC","WAFD","WAFU","WALD","WASH","WATT","WAVE","WB","WBA","WDAY","WDC","WDFC","WEN","WERN","WETF","WEYS","WFCF","WFRD","WHF","WHLM","WHLR","WILC","WIMI","WINA","WING","WINT","WIRE","WISA","WISH","WIX","WKEY","WKHS","WKME","WLDN","WLFC","WLTW","WMG","WMPN","WNEB","WNW","WOOF","WORX","WPRT","WRAP","WRLD","WSBC","WSBF","WSC","WSFS","WSTG","WTBA","WTER","WTFC","WTREP","WTRH","WVE","WVFC","WVVI","WW","WWD","WYNN","XAIR","XBIO","XBIT","XCUR","XEL","XELA","XELB","XENE","XENT","XERS","XFOR","XGN","XLNX","XLRN","XM","XMTR","XNCR","XNET","XOG","XOMA","XONE","XP","XPDI","XPEL","XPER","XRAY","XSPA","XTLB","YELL","YGMZ","YI","YJ","YMAB","YMTX","YNDX","YORW","YQ","YSAC","YTEN","YTRA","YVR","YY","Z","ZBRA","ZCMD","ZEAL","ZEUS","ZG","ZGNX","ZGYH","ZI","ZION","ZIOP","ZIVO","ZIXI","ZKIN","ZLAB","ZM","ZNGA","ZNTE","ZNTL","ZS","ZSAN","ZTAQU","ZUMZ","ZVO","ZWRK","ZY","ZYNE","ZYXI"]
 
 #
 #    symbol_list = ["AAPL", "CLOV", "WISH"]
@@ -157,5 +124,6 @@ if __name__ == '__main__':
             df1=df1.append(dft)
             time.sleep(1)
         df1.to_csv('gnews_shrt_'+sym+'.csv')
+
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
